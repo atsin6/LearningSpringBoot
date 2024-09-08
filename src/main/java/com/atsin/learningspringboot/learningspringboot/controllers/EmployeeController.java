@@ -1,6 +1,7 @@
 package com.atsin.learningspringboot.learningspringboot.controllers;
 
 import com.atsin.learningspringboot.learningspringboot.dto.EmployeeDTO;
+import com.atsin.learningspringboot.learningspringboot.exceptions.ResourceNotFoundException;
 import com.atsin.learningspringboot.learningspringboot.services.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -33,8 +35,10 @@ public class EmployeeController {
         Optional<EmployeeDTO> employeeDTO = employeeService.getEmployeeById(id);
         return employeeDTO
                 .map(employeeDTO1 -> ResponseEntity.ok(employeeDTO1))
-                .orElse(ResponseEntity.notFound().build());
+//                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee was not found with id: "+id));
     }
+
 
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@RequestParam(required = false, name = "inputAge") Integer age,
